@@ -3,7 +3,10 @@ package com.matt.gpstest;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PathEffect;
+import android.graphics.RectF;
 import android.location.GpsSatellite;
 import android.util.AttributeSet;
 import android.view.View;
@@ -44,18 +47,23 @@ public class TestView extends View {
 		mTextPaint.setTextSize(30);
 		mTextPaint.setStrokeWidth(1);
 		mTextPaint.setColor(0xff000000);
+		PathEffect effects = new DashPathEffect(new float[] { 2, 2 }, 1);
 
 		mPointPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
 		mPointPaint.setStyle(Paint.Style.STROKE);
 		mPointPaint.setColor(Color.LTGRAY);
 		mPointPaint.setStrokeWidth(2);
+		mPointPaint.setPathEffect(effects);
+
 	}
 
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		RectF rectF=new RectF(0,0,200,200);
 		super.onDraw(canvas);
 		canvas.drawCircle(originX,originY , 8,mPointPaint);
+		canvas.drawArc(rectF, 0, 30, false, mPointPaint);
 	}
 
 	

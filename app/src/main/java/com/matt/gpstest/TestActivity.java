@@ -20,7 +20,7 @@ public class TestActivity extends AppCompatActivity {
     TextView locationView;
     TextView gpsView;
     Context mContext;
-    TestView testView;
+
     SatelliteView satelliteView;
 
     @Override
@@ -32,7 +32,7 @@ public class TestActivity extends AppCompatActivity {
         locationView = (TextView) findViewById(R.id.locationinfo);
         gpsView = (TextView) findViewById(R.id.gpsinfo);
         satelliteView = (SatelliteView) findViewById(R.id.satelliteView);
-        testView = (TestView) findViewById(R.id.testview);
+
     }
 
 

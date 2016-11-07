@@ -2,6 +2,7 @@ package com.matt.gpstest;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.location.GpsSatellite;
@@ -46,7 +47,8 @@ public class SatelliteView extends View {
 		mTextPaint.setColor(0xff000000);
 
 		mPointPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPointPaint.setARGB(155, 167, 190, 206);
+		mPointPaint.setStyle(Paint.Style.STROKE);
+		mPointPaint.setColor(Color.RED);
 		mPointPaint.setStrokeWidth(2);
 	}
 
@@ -105,9 +107,6 @@ public class SatelliteView extends View {
 			canvas.drawText(""+this.satellitesList.get(i).getPrn(),satellitePos[i].x,satellitePos[i].y , mTextPaint);
 			mPointPaint.setARGB(155, 167, 190, 206);
 			canvas.drawCircle(satellitePos[i].x,satellitePos[i].y , 8,mPointPaint);
-			mPointPaint.setARGB(255, 255, 0, 0);
-			canvas.drawCircle(satellitePos[i].x,satellitePos[i].y , 5,mPointPaint);
-
 		}
 	}
 

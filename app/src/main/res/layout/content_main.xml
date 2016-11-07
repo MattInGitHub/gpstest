@@ -29,17 +29,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
-<com.matt.gpstest.TestView
-    android:id="@+id/testview"
-    android:layout_width="200dp"
-    android:layout_height="200dp" />
+        <com.matt.gpstest.TestView
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
     </FrameLayout>
 
     <com.matt.gpstest.SatelliteView
         android:id="@+id/satelliteView"
         android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@color/colorAccent"/>
+        android:layout_height="200dp"/>
 
     <LinearLayout android:orientation="horizontal" android:padding="4dip"
         android:gravity="center_horizontal" android:measureWithLargestChild="true"
