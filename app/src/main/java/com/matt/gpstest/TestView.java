@@ -1,6 +1,5 @@
 package com.matt.gpstest;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,32 +7,22 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
-import android.graphics.Typeface;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 //gps星历图
 public class TestView extends View {
 
 	//星图的X，y坐标
-	int originX = 100;
-	int originY =100;
-	float density;
-	int radius = 100;
-	int[] lines;
+	int originX;
+	int originY;
+	int radius;
 	//卫星画笔
-	Paint mPointPaint = null;
+	Paint mNetPaint = null;
 	//文字画笔
 	Paint mTextPaint = null;
-
-	private SensorManager mSensorManager;
-	private Sensor mSensor;
-	private float[] mValues;
+	Path netPath;
+	float mValue;
 
 	public TestView(Context context) {
 		this(context,null);
@@ -46,87 +35,81 @@ public class TestView extends View {
 		initView(context);
 	}
 
-	private final SensorEventListener mListener = new SensorEventListener() {
-		public void onSensorChanged(SensorEvent event) {
-			mValues = event.values;
-			invalidate();
-		}
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		//最终尺寸
+		int width = 0;
+		int height = 0;
+		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-		@Override
-		public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+		if (widthMode == MeasureSpec.EXACTLY) {
+			width = widthSize;
+		} else {
+			width = widthSize;
 		}
-	};
+		if (heightMode == MeasureSpec.EXACTLY) {
+			height = heightSize;
+		} else {
+			height = heightSize;
+		}
+		int Diameter = height<=width?height:width;//圆形图表的半径
+		radius = Diameter/2;
+		originX = radius;
+		originY =radius;
+		setMeasuredDimension(Diameter, Diameter);
+	}
+
+
+
 
 	private void initView(Context context) {
-		Typeface fontFace = Typeface.createFromAsset(((Activity)context).getAssets(),
-				"字酷堂海藏楷体.ttf");
-
-
-		mSensorManager = (SensorManager)((Activity)context).getSystemService(Context.SENSOR_SERVICE);
-		mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-		mSensorManager.registerListener(mListener, mSensor,
-				SensorManager.SENSOR_DELAY_GAME);
-
 		mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mTextPaint.setTextSize(200);
-//		mTextPaint.setStyle(Paint.Style.STROKE);
-		mTextPaint.setStrokeWidth(100);
-		mTextPaint.setTypeface(fontFace);
+		mTextPaint.setTextSize(100);
+		mTextPaint.setStyle(Paint.Style.STROKE);
+		mTextPaint.setStrokeWidth(2);
 		mTextPaint.setColor(Color.BLACK);
 
-		DisplayMetrics metric = new DisplayMetrics();
-		((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(metric);
-		density = metric.density;  // 屏幕密度（0.75 / 1.0 / 1.5）
+		mNetPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mNetPaint.setStyle(Paint.Style.STROKE);
+		mNetPaint.setColor(Color.RED);
+		mNetPaint.setStrokeWidth(2);
+		PathEffect effects = new DashPathEffect(new float[] { 5, 5 }, 1);
+		mNetPaint.setPathEffect(effects);
+	}
 
-		mPointPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPointPaint.setStyle(Paint.Style.STROKE);
-		mPointPaint.setColor(Color.RED);
-		mPointPaint.setStrokeWidth(2);
-
-
+	public void refreshView(float SensorValue){
+		this.mValue = SensorValue;
+		invalidate();
 	}
 
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		canvas.translate(originX*density,originY*density);
-		if (mValues != null) {
-			canvas.rotate(-mValues[0]);
-		}
+		canvas.translate(originX,originY);
+		canvas.rotate(-mValue);
 
-//		RectF rectF=new RectF(0,0,200*density,200*density);
-//		canvas.drawArc(rectF, 0, 30, false, mPointPaint);
-		canvas.drawCircle(0,0 , radius*density,mPointPaint);
+		canvas.drawCircle(0,0 , radius, mNetPaint);
 
-		PathEffect effects = new DashPathEffect(new float[] { 5, 5 }, 1);
-		mPointPaint.setPathEffect(effects);
-
-//		PathEffect effects = new DashPathEffect(new float[] { 5, 5 }, 1);
-//		mPointPaint.setPathEffect(effects);
-//		radius = (int) (radius*density);
 		for(int i = 1;i<3;i++){
-			canvas.drawCircle(0,0, (float) ((i/3.00)*radius*density),mPointPaint);
+			canvas.drawCircle(0,0, (float) ((i/3.00)*radius), mNetPaint);
 		}
 
-		Path path = new Path();
-		path.reset();
+		canvas.drawText("Cool",-100,45, mTextPaint);
 
+		netPath = new Path();
+		netPath.reset();
 		for(int i = 1;i<13;i++){
-			double x = radius*density*Math.cos(Math.toRadians(30*i));
-			double y = radius*density*Math.sin(Math.toRadians(30*i));
-			path.moveTo((float)x,(float)y);
-			path.lineTo(0,0);
+			double x = radius*Math.cos(Math.toRadians(30*i));
+			double y = radius*Math.sin(Math.toRadians(30*i));
+			netPath.moveTo((float)x,(float)y);
+			netPath.lineTo(0,0);
 		}
-		path.close();
-
-		canvas.drawText("卍",-100,70/*-80*density*/, mTextPaint);
-		canvas.drawPath(path,mPointPaint);
-
-
-
+		netPath.close();
+		canvas.drawPath(netPath, mNetPaint);
 	}
-
-
 }
